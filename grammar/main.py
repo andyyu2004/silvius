@@ -6,10 +6,10 @@ from parse import parse
 from parse import GrammaticalError
 from parse import SingleInputParser
 from execute import execute
-from ast import printAST
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import sys
+
     if len(sys.argv) > 1:
         filename = sys.argv[1]
         f = open(filename)
@@ -21,18 +21,23 @@ if __name__ == '__main__':
 
     while True:
         line = f.readline()
-        if line == '': break
-        if line == '\n': continue
+        if line == "":
+            break
+        if line == "\n":
+            continue
 
-        print ">", line,
+        print(
+            ">",
+            line,
+        )
         try:
             ast = parse(parser, scan(line))
-            printAST(ast)
+            # printAST(ast)
             execute(ast, f == sys.stdin)
         except GrammaticalError as e:
-            print "Error:", e
+            print("Error:", e)
 
     if f != sys.stdin:
         f.close()
 
-    print 'ok'
+    print("ok")

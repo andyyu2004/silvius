@@ -4,19 +4,20 @@ import os, platform
 from spark import GenericASTTraversal
 from automators import XDoAutomator, CLIClickAutomator, NirCmdAutomator
 
+
 class ExecuteCommands(GenericASTTraversal):
-    def __init__(self, ast, real = True):
+    def __init__(self, ast, real=True):
         GenericASTTraversal.__init__(self, ast)
         self.output = []
-        
-        if 'Linux' in platform.system():
+
+        if "Linux" in platform.system():
             self.automator = XDoAutomator(real)
-        elif 'Darwin' in platform.system():
+        elif "Darwin" in platform.system():
             self.automator = CLIClickAutomator(real)
-        elif 'Windows' in platform.system():
+        elif "Windows" in platform.system():
             self.automator = NirCmdAutomator(real)
         else:
-            print "No suitable automator for platform", platform.system()
+            print("No suitable automator for platform", platform.system())
 
         self.postorder_flat()
         self.automator.flush()
@@ -26,10 +27,10 @@ class ExecuteCommands(GenericASTTraversal):
         if node is None:
             node = self.ast
 
-        #for kid in node:
+        # for kid in node:
         #    self.postorder(kid)
 
-        name = 'n_' + self.typestring(node)
+        name = "n_" + self.typestring(node)
         if hasattr(self, name):
             func = getattr(self, name)
             func(node)
@@ -39,25 +40,32 @@ class ExecuteCommands(GenericASTTraversal):
     def n_chain(self, node):
         for n in node.children:
             self.postorder_flat(n)
+
     def n_char(self, node):
         self.automator.key(node.meta[0])
+
     def n_raw_char(self, node):
         self.automator.raw_key(node.meta[0])
+
     def n_mod_plus_key(self, node):
         self.automator.mod_plus_key(node.meta, node.children[0].meta[0])
+
     def n_movement(self, node):
         self.automator.key_movement(node.meta[0].type)
+
     def n_sequence(self, node):
         for c in node.meta[0]:
             self.automator.raw_key(c)
+
     def n_word_sequence(self, node):
         n = len(node.children)
         for i in range(0, n):
             word = node.children[i].meta
             for c in word:
                 self.automator.raw_key(c)
-            if(i + 1 < n):
-                self.automator.raw_key('space')
+            if i + 1 < n:
+                self.automator.raw_key("space")
+
     def n_null(self, node):
         pass
 

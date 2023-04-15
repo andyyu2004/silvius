@@ -21,9 +21,9 @@ function check_microphone {
 
 function run_recognition {
     if [[ $1 == 1 ]]; then
-        python stream/mic.py -s silvius-server.voxhub.io -d $which $args | python grammar/main.py
+        python stream/mic.py -s localhost -d $which $args | python grammar/main.py
     else
-        python stream/mic.py -s silvius-server.voxhub.io -d $which $args
+        python stream/mic.py -s localhost -d $which $args
     fi
 }
 

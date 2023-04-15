@@ -4,8 +4,10 @@ from parse import parse
 from parse import SingleInputParser
 from copy import deepcopy
 
+
 def find_terminals(rules, visited, which, found):
-    if which in visited: return
+    if which in visited:
+        return
     visited[which] = 1
 
     for r in rules[which]:
@@ -13,11 +15,13 @@ def find_terminals(rules, visited, which, found):
         for t in tokens:
             if t in rules:
                 find_terminals(rules, visited, t, found)
-            elif t != 'END' and t != 'ANY' and t != '|-':
+            elif t != "END" and t != "ANY" and t != "|-":
                 found.append(t)
 
+
 def find_sequences(rules, visited, which, found=[], level=0):
-    if which in visited and visited[which]: return
+    if which in visited and visited[which]:
+        return
     visited[which] = 1
 
     for r in rules[which]:
@@ -27,16 +31,18 @@ def find_sequences(rules, visited, which, found=[], level=0):
         for t in tokens:
             if t in rules:
                 find_sequences(rules, visited, t, new_found, new_level)
-            elif t != 'END' and t != '|-':
-                if len(new_found) <= new_level: new_found.append([])
+            elif t != "END" and t != "|-":
+                if len(new_found) <= new_level:
+                    new_found.append([])
                 new_found[new_level].append(t)
                 new_level += 1
-        #print new_found
+        # print new_found
     visited[which] = 0
+
 
 def build_n_grams(rules, n_max):
     gram = [{}]
-    for n in range(1, n_max+1):
+    for n in range(1, n_max + 1):
         gram.append({})
         # leaf rules
         for which in rules:
@@ -51,8 +57,8 @@ def build_n_grams(rules, n_max):
                                 qq = fragment[:]
                                 qq.extend(q)
                                 gram[n][which].append(qq)
-                        #pass
-                    elif t != 'END' and t != '|-':
+                        # pass
+                    elif t != "END" and t != "|-":
                         fragment.append(t)
                 if len(fragment) == n:
                     gram[n][which].append(fragment)
@@ -77,7 +83,8 @@ def build_n_grams(rules, n_max):
                 (name, tokens) = r
                 fragment = []
                 for t in tokens:
-                    if t == which: continue
+                    if t == which:
+                        continue
                     if t in rules:
                         if n - len(fragment) > 0:
                             for q in gram[n - len(fragment)][t]:
@@ -85,17 +92,19 @@ def build_n_grams(rules, n_max):
                                 qq.extend(q)
                                 if qq not in gram[n][which]:
                                     gram[n][which].append(qq)
-                    elif t != 'END' and t != '|-':
+                    elif t != "END" and t != "|-":
                         fragment.append(t)
-    #print gram
+    # print gram
     for g in gram[n]:
         for seq in gram[n][g]:
             for word in seq:
-                print word,
-            print
+                print(word)
+            print()
+
 
 def make_lm(rules, visited, which, prefix):
-    if which in visited: return
+    if which in visited:
+        return
     visited[which] = 1
 
     new_prefix = prefix[:]
@@ -105,31 +114,33 @@ def make_lm(rules, visited, which, prefix):
         for t in tokens:
             if t in rules:
                 make_lm(rules, visited, t, new_prefix)
-            elif t != 'END' and t != '|-':
-                print prefix, t
+            elif t != "END" and t != "|-":
+                print(prefix, t)
                 new_prefix.append(t)
+
 
 def get_terminals(parser):
     visited = {}
     terminals = []
-    find_terminals(parser.rules, visited, 'START', terminals)
+    find_terminals(parser.rules, visited, "START", terminals)
     keywords = set(terminals)
     return sorted(keywords)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     import sys
+
     parser = SingleInputParser()
-    #for rule in parser.rules:
+    # for rule in parser.rules:
     #    print rule, parser.rules[rule]
 
     visited = {}
-    #make_lm(parser.rules, visited, 'START', [])
+    # make_lm(parser.rules, visited, 'START', [])
     terminals = []
-    find_terminals(parser.rules, visited, 'START', terminals)
-    #print terminals
+    find_terminals(parser.rules, visited, "START", terminals)
+    # print terminals
 
     visited = {}
-    find_sequences(parser.rules, visited, 'START')
+    find_sequences(parser.rules, visited, "START")
 
     build_n_grams(parser.rules, int(sys.argv[1]))
-
