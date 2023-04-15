@@ -91,7 +91,7 @@ class MyClient(WebSocketClient):
                     if self.audio_gate > 0:
                         rms = audioop.rms(data, 2)
                         if rms < self.audio_gate:
-                            data = "\00" * len(data)
+                            data = b"\00" * len(data)
                     # if sample_chan == 2:
                     #    data = audioop.tomono(data, 2, 1, 1)
                     if sample_rate != self.byterate:

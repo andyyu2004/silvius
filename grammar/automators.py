@@ -56,30 +56,26 @@ class XDoAutomator(Automator):
         if len(self.char_list) == 0:
             return
 
-        command = "/usr/bin/xdotool" + " "
-        command += " ".join(self.char_list)
+        command = " ".join(self.char_list)
+        command = f"echo key {command} | /usr/local/bin/dotoolc"
         self.execute(command)
         self.char_list = []
 
     def raw_key(self, k):
-        if k == "'":
-            k = "apostrophe"
-        elif k == ".":
-            k = "period"
-        elif k == "-":
-            k = "minus"
-        self.add_keystrokes("key " + k)
+        m = {"'": "apostrophe", ".": "period", "-": "minus", "Return": "enter"}
+        if k in m:
+            k = m[k]
+        self.add_keystrokes(k)
 
     def key_movement(self, k):
         k = k.capitalize()
-        self.add_keystrokes("key " + k)
+        self.add_keystrokes(k)
 
     def key_nocaps(self, k):
-        self.add_keystrokes("key " + k)
+        self.add_keystrokes(k)
 
     def mod_plus_key(self, mods, k):
-        command = "key "
-        command += "+".join(mods)
+        command = "+".join(mods)
         if isinstance(k, scan.Token):
             k = k.type
         if (
